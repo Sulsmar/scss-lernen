@@ -1,0 +1,111 @@
+//Variablen//
+
+$font-stack: Roboto, sans-serif;
+$secondary-color: #6f6f6f;
+$primary-color: #FFF;
+$border: 5px solid $primary-color;
+
+body {
+    font: $font-stack;
+}
+
+//Datentypen//
+$string: 'Schwarz ist bunt genug'; //Strings können mit '' oder "" geschrieben werden
+$list: "blue", blue, 5 , green; //Liste mit verschiedenen Typen in der Liste
+$map: ('Linux' : true, $list : List); 
+
+//Nesting//
+
+div {
+    a {
+        p {
+            color: $secondary-color;
+        }
+    }
+}
+
+//Partials, Imports//
+
+/// Style Dokumente die Importiert werden, werden mit _dokumentenname.scss erzeugt. Diese werden nicht automatisch umgewandelt in klassisches CSS.
+/// import wird das ganze in der klassischen dokumentenname.scss mit @import "_dokumentenname.scss".
+/// Wichtig! Es kommt qauf die Position des Imports an, da genau an dieser Stelle die Daten aus der importierten Datei verwendet werden!
+
+
+//Mixins (includes) //
+
+@mixin flex {
+    display: flex;
+    display: -webkit-flex;
+}
+
+div {
+    @include flex();
+}
+
+
+//Mixins mit Parameter//@include
+
+@mixin my-border {
+    border: {
+        width: 5px;
+        style: solid;
+        color: $primary-color;
+    }
+}
+
+div {
+    @include my-border();
+}
+
+//mit Überladung
+
+@mixin my-border ($color, $width) {
+    border: {
+        width: $width;
+        style: solid;
+        color: $color;
+    }
+}
+
+div {
+    @include my-border($primary-color, 5px); //Solid bleibt, color und width werden mit Variablen übergeben. Es ist die korrekte Reihenfolge bei der Übergabe wichtig!
+
+}
+
+
+//mit Standartparameter
+
+@mixin my-border($color: $primary-color, $width: 3px){
+    width: $width;
+    style: solid;
+    color: $color;
+}
+
+div {
+    @include my-border(); /// Wenn keine Werte übergeben werden, werden die Standartwerte verarbeitet. Es ist die korrekte Reihenfolge der Übergabe wichtig!
+}
+
+//Mathematische Operatoren in Style Sheets//
+/// es kann +, -, *, /, % und round() verwendet werden.
+
+div {
+    width: (8px / 2); //Der Wert nach dem Mathematischen Zeichen kann keine Größeneinheit besitzen, sonst löst es einen Fehler aus. z.B. width: (8px / 2px); funkioniert nicht!!!
+}
+
+//mit Varialen
+
+div {
+    width: $width / 3; // Bei Verwendung von Variablen wird die Berechnung ohne Klammern geschrieben.
+}
+
+//round()
+
+div {
+    width: round($width / 5); //rundet auf bzw. ab zur nächsten Ganzzahl
+}
+
+//Modulo
+
+div {
+    width: $width % 3; // mit Rest! Es wird nur der Rest angezeigt bzw. verwendet!!!
+}
