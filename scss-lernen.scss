@@ -4,11 +4,13 @@ $font-stack: Roboto, sans-serif;
 $secondary-color: #6f6f6f;
 $primary-color: #FFF;
 $border: 5px solid $primary-color;
+$my-class: klasse;
+$list-eins: black, red, green, blue;
 
 body {
     font: $font-stack;
 }
-
+//-------------------------------------------------------------------------------------------------------------//
 //Datentypen//
 $string: 'Schwarz ist bunt genug'; //Strings können mit '' oder "" geschrieben werden
 $list: "blue", blue, 5 , green; //Liste mit verschiedenen Typen in der Liste
@@ -23,14 +25,14 @@ div {
         }
     }
 }
-
+//-------------------------------------------------------------------------------------------------------------//
 //Partials, Imports//
 
 /// Style Dokumente die Importiert werden, werden mit _dokumentenname.scss erzeugt. Diese werden nicht automatisch umgewandelt in klassisches CSS.
 /// import wird das ganze in der klassischen dokumentenname.scss mit @import "_dokumentenname.scss".
 /// Wichtig! Es kommt qauf die Position des Imports an, da genau an dieser Stelle die Daten aus der importierten Datei verwendet werden!
 
-
+//-------------------------------------------------------------------------------------------------------------//
 //Mixins (includes) //
 
 @mixin flex {
@@ -84,7 +86,7 @@ div {
 div {
     @include my-border(); /// Wenn keine Werte übergeben werden, werden die Standartwerte verarbeitet. Es ist die korrekte Reihenfolge der Übergabe wichtig!
 }
-
+//-------------------------------------------------------------------------------------------------------------//
 //Mathematische Operatoren in Style Sheets//
 /// es kann +, -, *, /, % und round() verwendet werden.
 
@@ -109,5 +111,139 @@ div {
 div {
     width: $width % 3; // mit Rest! Es wird nur der Rest angezeigt bzw. verwendet!!!
 }
+//-------------------------------------------------------------------------------------------------------------//
+//Interpolation mit # {}//
 
-// Test!
+//<p class= "klasse"></p>
+
+p.#{$my-class} {
+    color: $secondary-color;
+}
+// in reinem css würde es wie folgt aussehen
+p.klasse {
+    color: #6f6f6f;
+}
+//-------------------------------------------------------------------------------------------------------------//
+
+//!default//
+// kann man Variablen anhängen um zu verhindern das eine bestehende Variable überschrieben wird, dabei wird nicht die erste Variable damit geschützt, 
+// sodern es wird angehängt an eine weitere Variable mit dem selben Namen und das System überprüft ob diese schon gesetzt ist und verhindert eine Änderung!
+
+$eins: blue;
+$eins: green !default;
+
+// Variable $eins bleibt weiterhin blue. 
+
+//-------------------------------------------------------------------------------------------------------------//
+
+//@media//
+
+// <div class="wrapper"></div>
+
+.wrapper {
+    background-color: antiquewhite;
+    @media screen and (orientation: landscape) {
+        background-color:#333333;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// if Anweisungen //
+$border-gewuenscht: true;
+$width-two:if($border-gewuenscht, 10px, 0px);
+
+body {
+    border: $width-two solid black;
+}
+
+// in dem Beispiel wird die Border solange in der Variable $border-gewuenscht true steht die Border mit 10 px angezeit.
+// wird dieser wert auf false gesetzt nimmt das System den 2. Wert also 0px.
+
+// zweite Variante//
+$border-gewuenscht: false;
+
+body {
+    @if $border-gewuenscht {
+        border: 10px solid black;
+    }
+}
+
+// in scss hat auch null den Stellenwert von false.
+// also geht auch $border-gewuenscht: null;
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// for Schleifen //
+
+// <div class="box1></div>
+
+@for $i from 1 through 4 {            // Vom System wird @for $i from 1 to 4 generiert
+    .box#{$i} {                       // $i erhält automatisch den ersten Wert und zählt bis einschließlich den zweitern Wert hoch
+        width: 10px * $i;
+    }
+}
+
+// kombiniert mit if
+@for $i from 1 through 4 {            
+    .box#{$i} {  
+        @if $i == 3 {
+            background-color: aqua;
+        }                     
+        width: 10px * $i;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// each Schleife//
+
+@each $color in $list-eins {  // die Variable $color nimmt immer den Wert der aktuellen Position der Liste an!
+    .#{$color} {
+        background-color: $color;
+    }
+}
+// es wird automatisch die Klasse entsprechend  der Farbe der Postiotion der Liste erzeugt und die Hintergrundfarbe auf diese Farbe gesetzt.
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// Extends //
+// erlaubt nicht wie @mixin  Parameter
+
+%my-appearence {
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.box1 {
+    @extend %my-appearence;
+}
+
+.box2 {
+    @extend %my-appearence;
+}
+
+// Das System erzeugt keine css wie bei Mixin nacheinander sondern gekoppelt
+// damit geringere Dateigröße und dadurch auch weniger Traffic
+
+.box1, .box2 {
+    border: 1px solid black;
+    padding: 10px;
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// Debugg Nachrichten //
+
+.box2 {
+    @debug "Hallo Welt";
+    @warn "ohje das geht schief";
+    @error "na Klasse der Wolfgang wars"; // Compelieren bricht ab
+}
+
+.box1 {
+    $width: -1px;
+    @warn "ohje das geht schief. Breite ist #{$width}";
+}
+
+//-------------------------------------------------------------------------------------------------------------//
