@@ -247,3 +247,248 @@ body {
 }
 
 //-------------------------------------------------------------------------------------------------------------//
+
+//der & Marker//
+
+.box3 {
+    background-color: greenyellow;
+    &:hover {
+        background-color: beige;
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// leichte Farbfunktionen //
+
+//aufhellen//
+@mixin link-color($color) {
+    color: $color;
+    &:hover , &:active , &:focus {
+        color: lighten($color: $color, 25%); // lighten ist eine feste Funktion in scss, es wird bestimmt welche Farbe  verwendet werden soll 
+    }                                        // und um wieviel Prozent sie aufgehellt werden soll!
+}
+
+div {
+    @include link-color(#555);
+}
+
+//abdunkeln//
+@mixin link-color($color) {
+    color: $color;
+    &:hover , &:active , &:focus {
+        color: darken($color: $color, 25%); // darken ist eine feste Funktion in scss, es wird bestimmt welche Farbe  verwendet werden soll 
+    }                                        // und um wieviel Prozent sie abgedunkelt werden soll!
+}
+
+div {
+    @include link-color(#ccc);
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// Hersteller Präfixe Mixin //
+
+//manuell erstellt //
+div {
+    width: 100 px;
+    background-color: red;
+    -webkit-transition: 2s;
+    -moz-transition: 2s;
+    -ms-transition: 2s;
+    -o-transition: 2s;
+    transition: 2s;
+}
+
+div:hover {
+    width: 500 px;
+}
+
+// automatisch erstellen und für vieles weitere Verfügbar machen //
+@mixin vendorPrefix($attribute, $value) {
+    @each $prefix in -webkit-, -moz-, -ms-, -o-, '' {
+        #{$prefix}#{$attribute}: $value;
+    }
+}
+
+div {
+    width: 100 px;
+    background-color: red;
+    @include vendorPrefix(transition, 2s)
+}
+
+div:hover {
+    width: 500 px;
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// Stanzeffekt Mixin //
+
+@mixin stanzEffekt($opacity1, $opacity2) {
+    text-shadow: -1px -1px 1px rgba(255,255,255,$opacity1), 1px 1px 1px rgba(0,0,0,$opacity2);
+}
+
+a {
+    @include stanzEffekt(0.3, 0.3);
+    font: 80px Arial;
+    color: beige;
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// Responsive Breakpoints //
+
+@mixin breakPoint($medium) {
+    @if $medium == desktop {
+        @media (min-width: 1281px) {
+            @content;
+        }
+    }
+    @else if $medium == tablet {
+        @media (min-width: 768px) {
+            @content;
+        }
+    }
+    @else if $medium == mobile {
+        @media (min-width: 320px) {
+            @content;
+        }
+    }
+}
+
+div {
+    background:  $primary-color;
+    width: 75%;
+    @include breakPoint(desktop) {width: 60%;}
+    @include breakPoint(tablet) {width: 80%;}
+    @include breakPoint(mobile) {width: 95%;}
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// Ein und Ausblenden //
+
+@mixin toggle($show) {
+    @if $show {             // ist automatisch true;
+        visibility: visible;
+        opacity: 1;
+        transition: visible 1s, opacity 1s;
+    }
+    @else if not $show {        // not ist wie in anderen Sprachen !$show also false.
+        visibility: visible;
+        opacity: 0;
+        transition: visible 1s, opacity 1s;
+    }
+}
+
+.wrapper .box1 {
+    @include toggle(false);
+}
+.wrapper:hover .box1 {
+    @include toggle(true);
+}
+//-------------------------------------------------------------------------------------------------------------//
+
+// Mit Listen arbeiten //
+
+$variable: red, green, blue;
+$farbschema2: #FF0, #0FF, #F0F;
+$das-neue-farbschema: join($variable, $farbschema2);
+
+a {
+    @include stanzEffekt(0.3, 0.3);
+    font: 80px Arial;
+    color: nth($variable, 1); // nth bedeutet das nte Element, in scss werden Listenelemente immer mit 1 angefangen nicht mit 0!
+}
+// eine Element in der Liste ersetzten//
+$das-neue-farbschema: set-nth($das-neue-farbschema , 4 , #885); 
+// Es wird das vierte Element in der Liste mit der Farbe #885 ersetzt.es wird aber nur der Wert in der Liste  das-neue-Farbschema ersetzt, 
+//die anderen Listen wie Farbschema 2 das mit join verwendet worden ist bleibt davon unberührt!
+
+// Liste um ein weiteres Element erweitern //
+$das-neue-farbschema: append($das-neue-farbschema, #FF0);
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// Mit Maps arbeiten //
+
+$map1: (yellow: #FF0, red: #F00);
+$map2: (wolfisblau: #6495ed, orange: #ffa500);
+$neue-map: map-merge($map1 , $map2); // Maps zusammenführen
+$reduzierte-map: map-remove($map1, red ); // es wird über den Key entfernt
+
+a {
+    @include stanzEffekt(0.3, 0.3);
+    font: 80px Arial;
+    color: map-get($map2, wolfisblau ) // es wird die Map und der Key angegeben.
+}
+
+// Es kann auch noch mit folgenden Funktionen ausgelesen werden:
+// map-keys, map-values ,map-has-key
+
+//-------------------------------------------------------------------------------------------------------------//
+
+// nützliche Scss-Funktionen //
+
+// überprüfen ob Variable existiert//
+
+a {
+    @include stanzEffekt(0.3, 0.3);
+    font: 80px Arial;
+    @if variable-exists(primary-color){  // es wird in der Klammer ohne das $ geschrieben!
+        color: $primary-color;
+    }
+    @else {
+        color: black;
+    }
+}
+
+
+//  überprüfen ob Funktion existiert //
+a {
+    @include stanzEffekt(0.3, 0.3);
+    font: 80px Arial;
+    @if function-exists(darken) { 
+        color: darken($primary-color, 25%);
+    }
+    @else {
+        color: black;
+    }
+}
+
+// überprüfen ob mixin existiert // 
+a {
+    @include stanzEffekt(0.3, 0.3);
+    font: 80px Arial;
+    @if mixin-exists(link-color) { 
+        color: darken($primary-color, 25%);
+    }
+    @else {
+        color: black;
+    }
+}
+
+// unitless //
+// überprüft ob eine Variable eine Einheit wie z.B. px hat
+$font-size: 80px;
+$link-font-size: 20px;
+
+a {
+    @include stanzEffekt(0.3, 0.3);
+    @if unitless($font-size) and not unitless($link-font-size) {
+        font-size: $font-size * $link-font-size;
+    }
+    @else if unitless($link-font-size) and not unitless($font-size) {
+        font-size: $font-size * $link-font-size;
+    }
+    @else if not unitless($font-size) {
+        font-size: $font-size;
+    }
+    @else {
+        font-size: $font-size + px;
+    }
+    
+}
+//-------------------------------------------------------------------------------------------------------------//
